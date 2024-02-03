@@ -1,11 +1,28 @@
+require('express-async-errors')
+
 const express = require('express')
 const cors = require('cors')
+const migrationRun = require('./database/sqlite/migrations')
+const AppError = require('./utils/app.error')
+const routes = require('./routes')
+
+migrationRun()
+const port = process.env.PORT || 8888
 
 const app = express()
 app.use(express.json())
 app.use(cors())
 
-const port = process.env.PORT || 8888
+app.use(routes)
+
+app.use((error, request, response, next) => {
+  if(error instanceof AppError) {
+    return response.status(error.statusCode).json({
+      status: 'error',
+      message: error.message
+    })
+  }
+})
 
 
 app.listen(port, () => {
