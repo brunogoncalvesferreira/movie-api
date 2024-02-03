@@ -5,6 +5,7 @@ const cors = require('cors')
 const migrationRun = require('./database/sqlite/migrations')
 const AppError = require('./utils/app.error')
 const routes = require('./routes')
+const uploadConfig = require('./config/upload')
 
 migrationRun()
 const port = process.env.PORT || 8888
@@ -12,6 +13,8 @@ const port = process.env.PORT || 8888
 const app = express()
 app.use(express.json())
 app.use(cors())
+
+app.use('/files', express.static(uploadConfig.UPLOADS_FOLDER))
 
 app.use(routes)
 
